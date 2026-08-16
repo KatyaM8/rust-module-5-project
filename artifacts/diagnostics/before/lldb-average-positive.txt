@@ -1,0 +1,19 @@
+Debugger: LLDB from CodeLLDB 1.12.2 on Windows
+Target: integration test executable, debug profile
+Breakpoint: src/lib.rs:48, broken_app::average_positive
+Test: averages_only_positive --exact --nocapture
+
+At entry:
+- values.length = 3
+- values.data = [-5, 5, 15] (from the test)
+
+After stepping over values.iter().sum():
+- sum = 15
+- divisor used by the implementation = values.len() = 3
+- returned value = 5.0, expected 10.0
+
+Relevant backtrace:
+0 broken_app::average_positive at src/lib.rs:49
+1 integration::averages_only_positive at tests/integration.rs:36
+
+The session then continued and the assertion failed with exit status 101.

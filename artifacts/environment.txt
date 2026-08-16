@@ -1,0 +1,22 @@
+Captured: 2026-08-17, Europe/Moscow
+
+broken-app.zip SHA-256:
+1C0280821CBCB718AED74A4B7B3D79F9B7918D25BA10769B969D282867476B14
+
+reference-app.zip SHA-256:
+6DDCFE994568E9275F007CEBC5216893E2D267B46E8223CF07C83988473B4F3C
+
+Both supplied repositories had an unborn master branch and no commits.
+The original broken-app source was committed locally as:
+3f8d0dbd7db07d3dfa78d348d5b7418863dd5e9d
+
+reference-app was not changed. Its file manifest is in reference-app.sha256.
+
+rustc 1.97.0 (2d8144b78 2026-07-07)
+cargo 1.97.0 (c980f4866 2026-06-30)
+host: x86_64-pc-windows-msvc
+nightly: 1.100.0-nightly (67854e511 2026-08-15)
+miri: 0.1.0 (67854e511d 2026-08-15)
+CodeLLDB: 1.12.2
+Criterion: 0.5.1
+WSL: not installed

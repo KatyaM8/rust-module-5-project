@@ -1,0 +1,7 @@
+cargo fmt --all -- --check: PASS
+cargo check --locked: PASS
+cargo test --locked: PASS (12 integration tests)
+cargo +nightly miri test --locked: PASS (12 integration tests, no UB or leaks)
+cargo bench --locked --bench criterion -- --baseline before: PASS
+
+Final sanitizer and Valgrind status is documented in artifacts/tool-limitations.md.

@@ -1,0 +1,15 @@
+COMMAND: cargo check --locked
+EXIT: 0
+RESULT: compilation succeeded with three unsafe_op_in_unsafe_fn warnings in use_after_free.
+
+COMMAND: cargo test --locked -- --nocapture
+EXIT: 1
+RESULT:
+- averages_only_positive failed its assertion;
+- sums_even_numbers aborted at src/lib.rs:11 because get_unchecked received index == len;
+- process exit: 0xc0000409 (STATUS_STACK_BUFFER_OVERRUN).
+
+Additional regression tests before fixes:
+- normalize_removes_all_whitespace: "hello\trust\nworld" != "hellorustworld";
+- average_positive_handles_no_positive_values: -2.0 != 0.0;
+- concurrent_increment_does_not_lose_updates: 45046 != 200000.

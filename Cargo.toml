@@ -15,3 +15,9 @@ harness = false
 [[bench]]
 name = "criterion"
 harness = false
+
+[[bin]]
+name = "profile_workload"
+path = "src/bin/profile_workload.rs"
+test = false
+bench = false

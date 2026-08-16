@@ -1,0 +1,18 @@
+Miri 0.1.0 (67854e511d 2026-08-15)
+
+sum_even / sums_even_numbers:
+Undefined Behavior: `assume` called with `false`
+src/lib.rs:11: values.get_unchecked(idx), where idx == values.len().
+
+leak_buffer / counts_non_zero_bytes:
+test body passed, then Miri reported:
+memory leaked: Rust heap allocation, size 5, align 1
+allocation stack ended at src/lib.rs:23 in leak_buffer.
+
+use_after_free / freed_value_is_not_read_again:
+Undefined Behavior: memory access failed; allocation had been freed and the pointer was dangling.
+Allocation: src/lib.rs:58
+Deallocation: src/lib.rs:61
+Invalid read: src/lib.rs:62
+
+All three commands exited with code 1 before the fixes.
