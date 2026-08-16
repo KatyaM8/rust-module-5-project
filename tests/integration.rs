@@ -45,6 +45,7 @@ fn normalize_simple() {
 #[test]
 fn normalize_removes_all_whitespace() {
     assert_eq!(normalize(" Hello\tRust\nWorld "), "hellorustworld");
+    assert_eq!(normalize(" Ä\u{2003}Ö "), "äö");
 }
 
 #[test]
