@@ -8,7 +8,7 @@ reference-app.zip SHA-256:
 
 Both supplied repositories had an unborn master branch and no commits.
 The original broken-app source was committed locally as:
-3f8d0dbd7db07d3dfa78d348d5b7418863dd5e9d
+f4cc48b221fd62c1f469164ef5bdafbd5ebba558
 
 reference-app was not changed. Its file manifest is in reference-app.sha256.
 

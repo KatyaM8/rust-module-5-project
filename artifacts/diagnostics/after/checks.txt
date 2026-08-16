@@ -4,4 +4,13 @@ cargo test --locked: PASS (12 integration tests)
 cargo +nightly miri test --locked: PASS (12 integration tests, no UB or leaks)
 cargo bench --locked --bench criterion -- --baseline before: PASS
 
-Final sanitizer and Valgrind status is documented in artifacts/tool-limitations.md.
+GitHub Actions / Ubuntu:
+cargo check/test/build workspace: PASS
+cargo +nightly miri test --locked: PASS (12 integration tests)
+AddressSanitizer key regression test: PASS
+ThreadSanitizer key concurrency test: PASS
+Valgrind integration tests: PASS (0 errors, 0 bytes definitely lost)
+Valgrind demo: PASS (0 errors, 0 bytes definitely lost)
+Callgrind profile and PNG call graph: CREATED
+
+Full reports: artifacts/linux

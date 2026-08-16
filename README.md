@@ -9,7 +9,8 @@
 - Rust nightly 1.100.0-nightly от 2026-08-16;
 - Miri 0.1.0;
 - LLDB из CodeLLDB 1.12.2;
-- Criterion 0.5.1.
+- Criterion 0.5.1;
+- Ubuntu (`ubuntu-latest` в GitHub Actions) для Valgrind, Callgrind, ASan и TSan.
 
 Исходные архивы и состояние эталона зафиксированы в `artifacts/environment.txt` и `artifacts/reference-app.sha256`. Неизменённый эталон: [reference-app.zip](https://code.s3.yandex.net/middle-rust-blockchain/reference-app.zip).
 
@@ -78,7 +79,9 @@ powershell -ExecutionPolicy Bypass -File scripts/profile.ps1
 
 ## Linux-only проверки
 
-В предоставленном Windows-окружении WSL не установлен. Поэтому `Valgrind`, `perf`, Linux ASan/TSan и flamegraph фактически не запускались; это не заменено фиктивными результатами. Проект не содержит FFI, поэтому Valgrind проверяет нативный бинарь на утечки и ошибки памяти.
+Так как локальный WSL недоступен, Linux-проверки выполнены в GitHub Actions на Ubuntu. Workflow прошёл полностью: Miri — 12 тестов, ASan и TSan — ключевые регрессионные тесты, Valgrind — интеграционный бинарь и `demo`. Valgrind сообщил `0 errors` и `0 bytes definitely lost` в обоих запусках. Проект не содержит FFI или C-библиотек, поэтому проверялись нативные Rust-бинари.
+
+Полные результаты сохранены в `artifacts/linux`: журналы Miri, ASan, TSan и Valgrind, данные Callgrind, текстовый отчёт и `profile-callgraph.png`. Запуск также виден на странице [Linux verification](https://github.com/KatyaM8/rust-module-5-project/actions/workflows/verification.yml).
 
 После установки WSL/Linux команды воспроизводятся так:
 
@@ -89,14 +92,14 @@ powershell -ExecutionPolicy Bypass -File scripts/profile.ps1
 ./scripts/profile.sh
 ```
 
-Подробности попыток запуска инструментов находятся в `artifacts/tool-limitations.md`.
-
-На GitHub Linux-проверки воспроизводятся workflow-файлом `.github/workflows/verification.yml`. Он сохраняет логи Miri, ASan, TSan и Valgrind, а также Callgrind-отчёт и PNG-граф профиля.
+Локальные ограничения Windows отдельно описаны в `artifacts/tool-limitations.md`; они не относятся к успешно выполненным Linux-проверкам.
 
 ## История изменений
 
-- `3f8d0db` — исходный `broken-app` без изменений;
-- `c4bee92` — воспроизводимые Criterion benchmarks;
-- `87fc207` — регрессионные тесты и текстовый профиль;
-- `cb10600` — исправления UB, утечек, логики и гонки;
-- `c479c23` — алгоритмические и микрооптимизации.
+- `f4cc48b` — исходный `broken-app` без изменений;
+- `ea82b5d` — воспроизводимые Criterion benchmarks;
+- `b39e6a6` — регрессионные тесты и текстовый профиль;
+- `4bce1d5` — исправления UB, утечек, логики и гонки;
+- `94ceaad` — алгоритмические и микрооптимизации;
+- `7a21228` — итоговый отчёт и воспроизводимые команды;
+- `e8d1a31` — реальные отчёты Linux-проверок.
