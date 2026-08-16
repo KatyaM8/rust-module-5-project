@@ -62,11 +62,12 @@ fn average_positive_handles_no_positive_values() {
 
 #[test]
 fn freed_value_is_not_read_again() {
-    assert_eq!(unsafe { use_after_free() }, 84);
+    assert_eq!(use_after_free(), 84);
 }
 
 #[test]
 fn concurrent_increment_does_not_lose_updates() {
-    let total = broken_app::concurrency::race_increment(25_000, 8);
-    assert_eq!(total, 200_000);
+    let iterations = if cfg!(miri) { 100 } else { 25_000 };
+    let total = broken_app::concurrency::race_increment(iterations, 8);
+    assert_eq!(total, (iterations * 8) as u64);
 }
