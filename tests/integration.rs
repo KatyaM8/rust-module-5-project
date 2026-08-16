@@ -1,4 +1,4 @@
-use broken_app::{algo, leak_buffer, normalize, sum_even};
+use broken_app::{algo, leak_buffer, normalize, sum_even, use_after_free};
 
 #[test]
 fn sums_even_numbers() {
@@ -8,9 +8,22 @@ fn sums_even_numbers() {
 }
 
 #[test]
+fn sums_even_for_empty_and_single_value_slices() {
+    assert_eq!(sum_even(&[]), 0);
+    assert_eq!(sum_even(&[2]), 2);
+    assert_eq!(sum_even(&[3]), 0);
+}
+
+#[test]
 fn counts_non_zero_bytes() {
     let data = [0_u8, 1, 0, 2, 3];
     assert_eq!(leak_buffer(&data), 3);
+}
+
+#[test]
+fn counts_non_zero_bytes_without_losing_the_buffer() {
+    let data = vec![1_u8; 4_096];
+    assert_eq!(leak_buffer(&data), data.len());
 }
 
 #[test]
@@ -30,8 +43,30 @@ fn normalize_simple() {
 }
 
 #[test]
+fn normalize_removes_all_whitespace() {
+    assert_eq!(normalize(" Hello\tRust\nWorld "), "hellorustworld");
+}
+
+#[test]
 fn averages_only_positive() {
     let nums = [-5, 5, 15];
     // Ожидается (5 + 15) / 2 = 10, но текущая реализация делит на все элементы.
     assert!((broken_app::average_positive(&nums) - 10.0).abs() < f64::EPSILON);
+}
+
+#[test]
+fn average_positive_handles_no_positive_values() {
+    assert_eq!(broken_app::average_positive(&[]), 0.0);
+    assert_eq!(broken_app::average_positive(&[-5, 0, -1]), 0.0);
+}
+
+#[test]
+fn freed_value_is_not_read_again() {
+    assert_eq!(unsafe { use_after_free() }, 84);
+}
+
+#[test]
+fn concurrent_increment_does_not_lose_updates() {
+    let total = broken_app::concurrency::race_increment(25_000, 8);
+    assert_eq!(total, 200_000);
 }
