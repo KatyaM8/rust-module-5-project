@@ -11,7 +11,7 @@
 - LLDB из CodeLLDB 1.12.2;
 - Criterion 0.5.1.
 
-Исходные архивы и состояние эталона зафиксированы в `artifacts/environment.txt` и `artifacts/reference-app.sha256`.
+Исходные архивы и состояние эталона зафиксированы в `artifacts/environment.txt` и `artifacts/reference-app.sha256`. Неизменённый эталон: [reference-app.zip](https://code.s3.yandex.net/middle-rust-blockchain/reference-app.zip).
 
 ## Найденные дефекты
 
@@ -90,6 +90,8 @@ powershell -ExecutionPolicy Bypass -File scripts/profile.ps1
 ```
 
 Подробности попыток запуска инструментов находятся в `artifacts/tool-limitations.md`.
+
+На GitHub Linux-проверки воспроизводятся workflow-файлом `.github/workflows/verification.yml`. Он сохраняет логи Miri, ASan, TSan и Valgrind, а также Callgrind-отчёт и PNG-граф профиля.
 
 ## История изменений
 

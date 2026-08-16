@@ -1,0 +1,144 @@
+name: Linux verification
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests-and-miri:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Stable checks
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/ci
+          cargo fmt --all -- --check
+          cargo check --locked 2>&1 | tee artifacts/ci/cargo-check-linux.txt
+          cargo test --locked 2>&1 | tee artifacts/ci/cargo-test-linux.txt
+          cargo build --workspace --locked 2>&1 | tee artifacts/ci/cargo-build-workspace-linux.txt
+
+      - name: Install nightly Miri
+        shell: bash
+        run: |
+          rustup toolchain install nightly --profile minimal --component miri,rust-src
+          cargo +nightly miri setup
+
+      - name: Run Miri
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo +nightly miri test --locked 2>&1 | tee artifacts/ci/miri-linux.txt
+
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-and-miri
+          path: artifacts/ci
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install nightly Rust
+        shell: bash
+        run: rustup toolchain install nightly --profile minimal --component rust-src
+
+      - name: AddressSanitizer
+        shell: bash
+        env:
+          RUSTFLAGS: -Zsanitizer=address
+          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/ci
+          cargo +nightly test -Zbuild-std --locked \
+            --target x86_64-unknown-linux-gnu \
+            --test integration freed_value_is_not_read_again \
+            -- --exact --nocapture 2>&1 | tee artifacts/ci/asan-linux.txt
+
+      - name: ThreadSanitizer
+        shell: bash
+        env:
+          RUSTFLAGS: -Zsanitizer=thread
+          TSAN_OPTIONS: halt_on_error=1
+        run: |
+          set -o pipefail
+          cargo +nightly test -Zbuild-std --locked \
+            --target x86_64-unknown-linux-gnu \
+            --test integration concurrent_increment_does_not_lose_updates \
+            -- --exact --nocapture 2>&1 | tee artifacts/ci/tsan-linux.txt
+
+      - name: Upload sanitizer reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanitizers
+          path: artifacts/ci
+
+  valgrind-and-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install profiling tools
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind graphviz python3-gprof2dot
+
+      - name: Run Valgrind
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p artifacts/ci
+          cargo test --locked --test integration --no-run
+          test_binary="$(find target/debug/deps -maxdepth 1 -type f -executable -name 'integration-*' | head -n 1)"
+          test -n "$test_binary"
+          valgrind --leak-check=full --show-leak-kinds=all \
+            --errors-for-leak-kinds=definite,indirect \
+            --track-origins=yes --error-exitcode=1 \
+            --log-file=artifacts/ci/valgrind-integration.txt \
+            "$test_binary" --test-threads=1
+
+          cargo build --locked --bin demo
+          valgrind --leak-check=full --show-leak-kinds=all \
+            --errors-for-leak-kinds=definite,indirect \
+            --track-origins=yes --error-exitcode=1 \
+            --log-file=artifacts/ci/valgrind-demo.txt \
+            ./target/debug/demo
+
+      - name: Collect Callgrind profile
+        shell: bash
+        run: |
+          cargo build --locked --release --bin profile_workload
+          valgrind --tool=callgrind \
+            --callgrind-out-file=artifacts/ci/callgrind.out \
+            ./target/release/profile_workload \
+            > artifacts/ci/profile-workload-linux.csv
+          callgrind_annotate --inclusive=yes artifacts/ci/callgrind.out \
+            > artifacts/ci/callgrind-report.txt
+          gprof2dot -f callgrind artifacts/ci/callgrind.out \
+            | dot -Tpng -o artifacts/ci/profile-callgraph.png
+
+      - name: Upload Valgrind and profile reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: valgrind-and-profile
+          path: artifacts/ci
