@@ -100,7 +100,8 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y valgrind graphviz python3-gprof2dot
+          sudo apt-get install -y valgrind graphviz python3-pip
+          python3 -m pip install --user --break-system-packages gprof2dot
 
       - name: Run Valgrind
         shell: bash
@@ -133,7 +134,7 @@ jobs:
             > artifacts/ci/profile-workload-linux.csv
           callgrind_annotate --inclusive=yes artifacts/ci/callgrind.out \
             > artifacts/ci/callgrind-report.txt
-          gprof2dot -f callgrind artifacts/ci/callgrind.out \
+          python3 -m gprof2dot -f callgrind artifacts/ci/callgrind.out \
             | dot -Tpng -o artifacts/ci/profile-callgraph.png
 
       - name: Upload Valgrind and profile reports
