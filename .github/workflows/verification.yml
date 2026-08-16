@@ -3,10 +3,12 @@ name: Linux verification
 on:
   push:
     branches: [main, master]
+    paths-ignore:
+      - artifacts/linux/**
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   tests-and-miri:
@@ -143,3 +145,24 @@ jobs:
         with:
           name: valgrind-and-profile
           path: artifacts/ci
+
+  save-linux-artifacts:
+    needs: [tests-and-miri, sanitizers, valgrind-and-profile]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download verification reports
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/linux
+
+      - name: Save reports in the repository
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add artifacts/linux
+          git diff --cached --quiet && exit 0
+          git commit -m "artifacts: save Linux verification reports [skip ci]"
+          git push
