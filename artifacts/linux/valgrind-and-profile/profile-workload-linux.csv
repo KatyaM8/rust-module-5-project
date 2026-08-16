@@ -1,0 +1,4 @@
+workload,total_ms,per_call_us,share_percent
+normalize_51k,7472.577,3736.289,97.80
+fib_32,0.377,3.766,0.00
+dedup_2k,167.585,837.924,2.19

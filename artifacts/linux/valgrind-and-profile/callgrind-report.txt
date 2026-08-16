@@ -1,0 +1,49 @@
+--------------------------------------------------------------------------------
+Profile data file 'artifacts/ci/callgrind.out' (creator: callgrind-3.22.0)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 328369045
+Trigger: Program termination
+Profiled target:  ./target/release/profile_workload (PID 3857, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+Ir                     
+--------------------------------------------------------------------------------
+1,684,755,630 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir                      file:function
+--------------------------------------------------------------------------------
+1,684,755,630 (100.0%)  ???:0x000000000001f540 [/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2]
+1,684,489,106 (99.98%)  ???:(below main) [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+1,684,489,094 (99.98%)  ./csu/../csu/libc-start.c:__libc_start_main@@GLIBC_2.34 [/usr/lib/x86_64-linux-gnu/libc.so.6]
+1,684,488,911 (99.98%)  ./csu/../sysdeps/nptl/libc_start_call_main.h:(below main) [/usr/lib/x86_64-linux-gnu/libc.so.6]
+1,684,487,104 (99.98%)  ???:main [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+1,684,487,093 (99.98%)  ???:std::rt::lang_start_internal [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+1,684,386,934 (99.98%)  ???:std::rt::lang_start::<()>::{closure#0} [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+1,684,386,928 (99.98%)  ???:std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()> [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+1,684,386,924 (99.98%)  ???:profile_workload::main [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+1,636,952,617 (97.16%)  ???:broken_app::normalize [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+1,578,786,617 (93.71%)  ???:<alloc::vec::Vec<u8> as alloc::vec::spec_from_iter_nested::SpecFromIterNested<u8, core::iter::adapters::map::Map<core::iter::adapters::filter::Filter<core::str::iter::Bytes, broken_app::normalize::{closure#0}>, broken_app::normalize::{closure#1}>>>::from_iter [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+   92,164,400 ( 5.47%)  ???:core::slice::sort::unstable::quicksort::quicksort::<u64, <u64 as core::cmp::PartialOrd>::lt>'2 [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+   46,866,200 ( 2.78%)  ???:broken_app::algo::slow_dedup [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+   41,416,400 ( 2.46%)  ???:core::slice::sort::unstable::ipnsort::<u64, <u64 as core::cmp::PartialOrd>::lt> [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+   41,411,400 ( 2.46%)  ???:core::slice::sort::unstable::quicksort::quicksort::<u64, <u64 as core::cmp::PartialOrd>::lt> [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+   36,828,000 ( 2.19%)  ???:core::str::converts::from_utf8 [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+    6,138,617 ( 0.36%)  ???:<alloc::raw_vec::RawVecInner<_>>::reserve::do_reserve_and_handle::<alloc::alloc::Global> [/home/runner/work/rust-module-5-project/rust-module-5-project/target/release/profile_workload]
+
+--------------------------------------------------------------------------------
+The following files chosen for auto-annotation could not be found:
+--------------------------------------------------------------------------------
+  ./csu/../csu/libc-start.c
+  ./csu/../sysdeps/nptl/libc_start_call_main.h
+
